@@ -52,13 +52,13 @@
         <h1>Flask Calculator</h1>
         <input type="text" id="expression" placeholder="Enter expression">
         <br>
-        <button onclick="calculate()">Calculate</button>
+        <button onclick="sendRequest()">Calculate</button>
         <h2 id="result"></h2>
     </div>
     <script>
-        function calculate() {
+        function sendRequest() {
             const expression = document.getElementById('expression').value;
-            fetch('http://114.212.51.121:8000/calculate', {
+            fetch('http://114.212.51.121:8002/submit', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -74,6 +74,21 @@
                 document.getElementById('result').innerText = 'Error calculating';
             });
         }
+
+        function fetchResult() {
+            fetch('http://114.212.51.121:8002/result')
+            .then(response => response.json())
+            .then(data => {
+                if (data.result) {
+                    document.getElementById('result').innerText = 'Result: ' + data.result;
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        setInterval(fetchResult, 500);  // 每0.5秒获取一次结果
     </script>
 </body>
 </html>
