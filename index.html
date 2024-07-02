@@ -56,33 +56,80 @@
         <h2 id="result"></h2>
     </div>
     <script>
-        function submitRequest() {
+        async function submitRequest() {
             const expression = document.getElementById('expression').value;
-            fetch('https://api.github.com/repos/charon181/calculator-webpage/contents/request.json', {
+            const token = 'YOUR_GITHUB_TOKEN'; // 使用 GitHub Personal Access Token
+            const repo = 'yourusername/calculator-webpage'; // 替换为你的仓库路径
+            const path = 'request.json'; // 请求文件路径
+            const apiUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
+
+            // 获取文件的 SHA 值
+            let response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (!response.ok) {
+                document.getElementById('result').innerText = 'Error fetching SHA';
+                return;
+            }
+
+            const fileData = await response.json();
+            const sha = fileData.sha;
+
+            // 更新文件内容
+            const newContent = btoa(JSON.stringify({ expression: expression }));
+            response = await fetch(apiUrl, {
                 method: 'PUT',
                 headers: {
+                    'Authorization': `token ${token}`,
                     'Content-Type': 'application/json',
-                    'Authorization': 'token YOUR_GITHUB_TOKEN'
                 },
                 body: JSON.stringify({
                     message: 'New calculation request',
-                    content: btoa(JSON.stringify({ expression: expression })),
-                    sha: 'LATEST_COMMIT_SHA'  // You need to get the latest commit sha for this file
+                    content: newContent,
+                    sha: sha
                 }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.content) {
-                    document.getElementById('result').innerText = 'Calculation submitted';
-                } else {
-                    document.getElementById('result').innerText = 'Error submitting calculation';
-                }
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                document.getElementById('result').innerText = 'Error submitting calculation';
             });
+
+            if (response.ok) {
+                document.getElementById('result').innerText = 'Calculation submitted';
+            } else {
+                document.getElementById('result').innerText = 'Error submitting calculation';
+            }
         }
+
+        async function fetchResult() {
+            const token = 'YOUR_GITHUB_TOKEN'; // 使用 GitHub Personal Access Token
+            const repo = 'yourusername/calculator-webpage'; // 替换为你的仓库路径
+            const path = 'result.json'; // 结果文件路径
+            const apiUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
+
+            const response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (!response.ok) {
+                console.error('Error fetching result');
+                return;
+            }
+
+            const fileData = await response.json();
+            const content = JSON.parse(atob(fileData.content));
+
+            if (content.result) {
+                document.getElementById('result').innerText = 'Result: ' + content.result;
+            }
+        }
+
+        setInterval(fetchResult, 5000);  // 每5秒获取一次结果
     </script>
 </body>
 </html>
