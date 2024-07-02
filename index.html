@@ -58,8 +58,8 @@
     <script>
         async function submitRequest() {
             const expression = document.getElementById('expression').value;
-            const token = 'YOUR_GITHUB_TOKEN'; // 使用 GitHub Personal Access Token
-            const repo = 'yourusername/calculator-webpage'; // 替换为你的仓库路径
+            const token = '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'; // 使用 GitHub Personal Access Token
+            const repo = 'Charon81/calculator-webpage'; // 替换为你的仓库路径
             const path = 'request.json'; // 请求文件路径
             const apiUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
 
@@ -103,8 +103,8 @@
         }
 
         async function fetchResult() {
-            const token = 'YOUR_GITHUB_TOKEN'; // 使用 GitHub Personal Access Token
-            const repo = 'yourusername/calculator-webpage'; // 替换为你的仓库路径
+            const token = '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'; // 使用 GitHub Personal Access Token
+            const repo = 'Charon81/calculator-webpage'; // 替换为你的仓库路径
             const path = 'result.json'; // 结果文件路径
             const apiUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
 
@@ -129,7 +129,7 @@
             }
         }
 
-        setInterval(fetchResult, 5000);  // 每5秒获取一次结果
+        setInterval(fetchResult, 1000);  // 每5秒获取一次结果
     </script>
 </body>
 </html>
